@@ -7,8 +7,6 @@ using namespace std;
 // 定义管道名 , 如果是跨网络通信 , 则在圆点处指定服务器端程序所在的主机名
 #define EXAMP_PIPE   L"\\\\.\\pipe\\ESurfingClientPipe"
 
-//需要管理员权限!!!!!
-
 void __fastcall DoStartSvc();
 
 int main()
@@ -57,8 +55,9 @@ int main()
     const wchar_t* wcL = L"<M><OpS>Portal</OpS><OpT>Portal</OpT><OpC>ClientStart</OpC><P></P></M>";
     const wchar_t* wcL2 = L"<M><OpS>Portal</OpS><OpT>Portal</OpT><OpC>CheckEnv</OpC><P></P></M>";
     wstring wcL3 = L"<M><OpS>Portal</OpS><OpT>Portal</OpT><OpC>PortalConnect</OpC><P><user>" + account + L"</user><password>" + password + L"</password></P></M>";
+    const wchar_t* wcL3_ = wcL3.c_str();
 
-    wcout << wcL3 << endl;
+    wcout << wcL3_ << endl;
 
     system("pause");
 
@@ -187,8 +186,8 @@ var UPDATE_COMPLETE = 'UpdateComplete';
           
             cout << "登录中" << endl << endl << endl << endl;
             WriteFile(hPipe,
-                wcL3.c_str(),
-                2 * wcslen(wcL3.c_str()),
+                wcL3_,
+                2 * wcslen(wcL3_),
                 &dwWritten,
                 NULL);
 
@@ -210,6 +209,15 @@ var UPDATE_COMPLETE = 'UpdateComplete';
 
                 if(wcsstr(static_cast<wchar_t*>(lpBuffer), L"<newState>2</newState>"))
                     cout << "登录成功!" << endl << endl << endl << endl;
+
+                if (wcsstr(static_cast<wchar_t*>(lpBuffer), L"TicketResp")) { //好像要多来几次
+                    cout << "登录中" << endl << endl << endl << endl;
+                    WriteFile(hPipe,
+                        wcL3_,
+                        2 * wcslen(wcL3_),
+                        &dwWritten,
+                        NULL);
+                }
             } while (true);
 
             //没登录成功可以重新开一次试试 (Ticket过期)
