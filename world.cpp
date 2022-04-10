@@ -1,10 +1,10 @@
+
 #include "windows.h"
 #include <iostream>
 using namespace std;
 
 #define BUF_SIZE 4096
 // 定义管道名 , 如果是跨网络通信 , 则在圆点处指定服务器端程序所在的主机名
-// 这里先把 EsurfingSvr.exe 服务开起来
 #define EXAMP_PIPE   L"\\\\.\\pipe\\ESurfingClientPipe"
 
 int main()
@@ -34,12 +34,26 @@ int main()
     DWORD  cbRead, cbToWrite, cbWritten, dwMode;
     BOOL   fSuccess = FALSE;
 
+    wstring account;
+    wstring password ;
+
+    cout << "输入账号:\n";
+    wcin >> account;
+    wcout << "账号: " << account << L"\n";
+
+    cout << "输入密码:\n";
+    wcin >> password;
+    wcout << "密码: " << password << L"\n";
 
 
     const wchar_t* wcL = L"<M><OpS>Portal</OpS><OpT>Portal</OpT><OpC>ClientStart</OpC><P></P></M>";
     const wchar_t* wcL2 = L"<M><OpS>Portal</OpS><OpT>Portal</OpT><OpC>CheckEnv</OpC><P></P></M>";
-    const wchar_t* wcL3 = L"<M><OpS>Portal</OpS><OpT>Portal</OpT><OpC>PortalConnect</OpC><P><user>账号</user><password>密码</password></P></M>";
-   // const wchar_t* wcL = L"<M><OpS>Portal</OpS><OpT>Portal</OpT><OpC>CheckEnv</OpC><P></P></M>";
+    wstring wcL3 = L"<M><OpS>Portal</OpS><OpT>Portal</OpT><OpC>PortalConnect</OpC><P><user>" + account + L"</user><password>" + password + L"</password></P></M>";
+
+    wcout << wcL3 << endl;
+
+    system("pause");
+
 
     //DIS_REASON_STARTUP: "5",        //5：客户端启动自动下线（上次退出未正常下线）；
     const wchar_t* Discon = L"<M><OpS>Portal</OpS><OpT>Portal</OpT><OpC>PortalDisConnect</OpC><P><src>5</src></P></M>";
@@ -165,8 +179,8 @@ var UPDATE_COMPLETE = 'UpdateComplete';
           
             cout << "登录中" << endl << endl << endl << endl;
             WriteFile(hPipe,
-                wcL3,
-                2 * wcslen(wcL3),
+                wcL3.c_str(),
+                2 * wcslen(wcL3.c_str()),
                 &dwWritten,
                 NULL);
 
@@ -201,5 +215,6 @@ var UPDATE_COMPLETE = 'UpdateComplete';
         cout << "退出!" << endl << endl << endl << endl;
         CloseHandle(hPipe);
 
+        getchar();
     return 0;
 }
